@@ -1,6 +1,7 @@
 Comando -> CreateDatabase
          | CreateTable
-         | Select.
+         | Select
+         | Insert.
 
 Select -> SELECT Proyeccion FROM identificador CondicionResultado.
 
@@ -40,3 +41,16 @@ OperadorLogico -> and
 Termino -> identificador 
          | numero
          | cadena.
+
+Insert -> INSERT INTO identificador InsertData.
+
+InsertData -> ( ListaColumnas ) VALUES ( ListaValores ).
+
+ListaValores -> Valor ListaValoresPrime.
+
+ListaValoresPrime -> coma Valor ListaValoresPrime
+                   | ε.
+
+Valor -> numero
+       | cadena
+       | NULL.
