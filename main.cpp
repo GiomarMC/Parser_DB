@@ -1,4 +1,5 @@
 #include "scanner.h"
+#include "parser.h"
 
 int main()
 {
@@ -16,12 +17,28 @@ int main()
         }
     }
 
-    // Mostrar los tokens
-    for (const auto& token : tokens) {
+    std::cout << "Analasis lexico" << std::endl;
+    for (const auto& token : tokens)
+    {
         std::cout << "Tipo: " << tokenTypeToString(token.type) 
                   << ", Lexema: " << token.lexeme 
                   << ", Columna: " << token.column << std::endl;
     }
+
+    std::cout << "Analisis sintactico" << std::endl;
+    try
+    {
+        Parser parser(tokens);
+        auto astRoot = parser.parse();
+        generateDotFile(astRoot, "ast.dot");
+        generatePng("ast.dot", "ast.png");
+        std::cout << "AST generado exitosamente en ast.png.\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+    
 
     return 0;
 }
