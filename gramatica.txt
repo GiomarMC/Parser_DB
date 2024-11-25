@@ -1,7 +1,25 @@
-Comando -> CreateDatabase
-         | CreateTable
-         | Select
-         | Insert.
+Programa -> ListaSentencias.
+
+ListaSentencias -> Comando ListaSentencias
+                | ε.
+
+Comando -> START_SENTENCIA CreateDatabase END_SENTENCIA newline
+         | START_SENTENCIA CreateTable END_SENTENCIA newline
+         | START_SENTENCIA Select END_SENTENCIA newline
+         | START_SENTENCIA Insert END_SENTENCIA newline.
+
+CreateDatabase -> CREATE DATABASE identificador.
+
+CreateTable -> CREATE TABLE identificador ( ListaColumnasDef ).
+
+ListaColumnasDef -> identificador TipoColumna ListaColumnasDefPrime.
+
+ListaColumnasDefPrime -> coma identificador TipoColumna ListaColumnasDefPrime
+                       | ε.
+
+TipoColumna -> INT
+             | VARCHAR
+             | BOOLEAN.
 
 Select -> SELECT Proyeccion FROM identificador CondicionResultado.
 
