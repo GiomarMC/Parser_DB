@@ -6,7 +6,7 @@
 enum TokenType
 {
     // Palabras clave
-    CREATE, DATABASE, TABLE, SELECT, FROM, WHERE,
+    CREATE, DATABASE, TABLE, SELECT, INSERT, INTO, VALUES, FROM, WHERE,
     INT, VARCHAR, BOOLEAN,
 
     // Identificadores
@@ -36,6 +36,7 @@ enum TokenType
     START_SENTENCIA,                // &
     END_SENTENCIA,                 // #
     ALL_COLUMNS,                   // *
+    SALTO_DE_LINEA,                // \n
     UNKNOWN,                       // Token desconocido
 };
 
@@ -57,6 +58,9 @@ std::string tokenTypeToString(TokenType type)
         case DATABASE: return "DATABASE";
         case TABLE: return "TABLE";
         case SELECT: return "SELECT";
+        case INSERT: return "INSERT";
+        case INTO: return "INTO";
+        case VALUES: return "VALUES";
         case FROM: return "FROM";
         case WHERE: return "WHERE";
         case INT: return "INT";
@@ -79,6 +83,7 @@ std::string tokenTypeToString(TokenType type)
         case SEPARADOR: return "SEPARADOR";
         case END_SENTENCIA: return "END_SENTENCIA";
         case ALL_COLUMNS: return "ALL_COLUMNS";
+        case SALTO_DE_LINEA: return "SALTO_DE_LINEA";
         case UNKNOWN: return "UNKNOWN";
         default: return "UNKNOWN";
     }
