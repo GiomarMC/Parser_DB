@@ -34,7 +34,7 @@ class Scanner
             {
                 char current = source[i];
 
-                if (isprint(current) == false)
+                if (isprint(current) == false && current != '\n')
                 {
                     errorList.push_back("Error léxico: Caracter no reconocido en la columna " + std::to_string(column));
                     i++;
@@ -61,7 +61,10 @@ class Scanner
                 if (isspace(current))
                 {
                     if (current == '\n')
+                    {
+                        tokens.push_back(Token(SALTO_DE_LINEA, "\\n", column));
                         column = 1;
+                    }
                     else
                         column++;
                     i++;
