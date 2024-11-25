@@ -11,9 +11,9 @@
 
 static const std::unordered_map<std::string, TokenType> keywords = {
     {"CREATE", CREATE}, {"DATABASE", DATABASE}, {"TABLE", TABLE},
-    {"SELECT", SELECT}, {"FROM", FROM}, {"WHERE", WHERE},
+    {"SELECT", SELECT}, {"INSERT", INSERT}, {"INTO", INTO}, {"VALUES", VALUES},{"FROM", FROM}, {"WHERE", WHERE},
     {"int", INT}, {"varchar", VARCHAR}, {"boolean", BOOLEAN},
-    {"and", AND}, {"or", OR}
+    {"and", AND}, {"or", OR}, {"\n", SALTO_DE_LINEA}
 };
 
 bool isKeyword(const std::string& lexeme)
