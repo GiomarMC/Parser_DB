@@ -37,6 +37,7 @@ enum TokenType
     END_SENTENCIA,                 // #
     ALL_COLUMNS,                   // *
     SALTO_DE_LINEA,                // \n
+    NULL_TYPE,                     // null
     UNKNOWN,                       // Token desconocido
 };
 
