@@ -3,7 +3,7 @@
 
 int main()
 {
-    std::string sourceCode = "&CREATE DATABASE test#\n&SELECT * FROM table WHERE column = 10#";
+    std::string sourceCode = "&CREATE DATABASE test#\n&SELECT * FROM table WHERE column = 10#\n";
     std::vector<std::string> errorList;
 
     Scanner scanner(sourceCode);
