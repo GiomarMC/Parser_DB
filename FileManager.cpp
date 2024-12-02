@@ -111,7 +111,9 @@ std::string FileManager::read_record(const std::string& schema_name, size_t reco
         // Leer las posiciones del archivo de índices
         std::vector<std::streamoff> positions;
         std::streamoff pos;
-        while (idxFile.read(reinterpret_cast<char*>(&pos), sizeof(pos))) {
+        int value;
+        while (idxFile >> value){
+            pos = static_cast<std::streamoff>(value);
             positions.push_back(pos);
         }
 
@@ -147,7 +149,7 @@ void FileManager::manage_free_space(const std::string& filename) {
     std::cout << "Gestión de espacio libre no implementada aún." << std::endl;
 }
 
-/*void FileManager::list(){
+/*void FileManager::list_files(){
     for (const auto& entry : fs::directory_iterator(base_path)) {
         std::cout << entry.path() << std::endl;
     }
