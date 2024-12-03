@@ -31,6 +31,8 @@ bool FileManager::create_schema(std::string schema_name){
         } else {
             std::cout << "Schema already exists: " << schema_name << std::endl;
         }
+        current_schema = schema_name;
+        
     } catch (const std::exception& e) {
         std::cerr << "Error creating Schema: " << e.what() << std::endl;
         return false;
@@ -95,8 +97,8 @@ bool FileManager::write_record(const std::string& filename, const std::string& r
 std::string FileManager::read_record(const std::string& schema_name, size_t record_id) {
     try {
         // Ruta al archivo de índices
-        fs::path idxFilePath = base_path + "/" + schema_name + ".idx";
-        fs::path dataFilePath = base_path + "/" + schema_name + ".dat";
+        fs::path idxFilePath = base_path + "/"  + current_schema + "/" + schema_name + ".idx";
+        fs::path dataFilePath = base_path + "/"  + current_schema + "/" + schema_name + ".dat";
         
         if (!fs::exists(idxFilePath) || !fs::exists(dataFilePath)) {
             throw std::runtime_error("Index or data file does not exist for schema: " + schema_name);
@@ -149,11 +151,11 @@ void FileManager::manage_free_space(const std::string& filename) {
     std::cout << "Gestión de espacio libre no implementada aún." << std::endl;
 }
 
-/*void FileManager::list_files(){
+void FileManager::list_files(){
     for (const auto& entry : fs::directory_iterator(base_path)) {
         std::cout << entry.path() << std::endl;
     }
-}*/
+}
 
 namespace fs = std::filesystem;
 
