@@ -6,6 +6,7 @@
 
 class StorageManager {
 private:
+    std::string base_path;
     std::string schema_name;   // Esquema activo
     std::string metadata;      // Información asociada al esquema
     std::string index_file;    // Ruta al archivo de índices
