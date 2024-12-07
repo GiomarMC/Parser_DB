@@ -1,6 +1,8 @@
 #include "StorageManager.h"
 #include <fstream>
 #include <iostream>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 StorageManager::StorageManager(const std::string& schema, const std::string& meta, const std::string& index)
     : schema_name(schema), metadata(meta), index_file(index) {
@@ -108,11 +110,14 @@ std::vector<std::string> StorageManager::readIndex() {
     return indices;
 }
 
-
+// Compare this snippet from MetadataManager.h:
+// #ifndef METADATA_MANAGER_H
+// #define METADATA_MANAGER_H
+//
 /////////////////////////////////////////////////////////////////////////
 
 #include "StorageManager.h"
-
+/*
 int main() {
     StorageManager sm("schema1", "metadata", "index.idx");
 
@@ -137,3 +142,4 @@ int main() {
 
     return 0;
 }
+*/

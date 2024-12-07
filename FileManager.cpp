@@ -158,7 +158,7 @@ void FileManager::list_files(){
 }
 
 namespace fs = std::filesystem;
-
+/*
 int main(int argc, const char * argv[]) {
     FileManager filemanager;
     filemanager.create_schema("test_schema");
@@ -171,3 +171,4 @@ int main(int argc, const char * argv[]) {
     //filemanager.list_files();
     return 0;
 }
+*/

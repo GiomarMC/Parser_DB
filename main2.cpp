@@ -58,17 +58,17 @@ void testStorageManager(){
         std::cout << "Registro: " << record << std::endl;
     }
 }
-
+/*
 void testMetadataManager(){
     MetadataManager mm;
     mm.create_schema("schema1");
 }
-
+*/
 int main(int argc, const char * argv[]) {
     
     testFileManager();
     testStorageManager();
-    testMetadataManager();
+    //testMetadataManager();
     
     return 0;
 }
