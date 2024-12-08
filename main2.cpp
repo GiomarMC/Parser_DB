@@ -58,17 +58,28 @@ void testStorageManager(){
         std::cout << "Registro: " << record << std::endl;
     }
 }
-/*
+
 void testMetadataManager(){
-    MetadataManager mm;
-    mm.create_schema("schema1");
+    MetadataManager mm("schema1");
+
+    // Escribir metadatos
+    mm.writeMetadata({"id:int", "name:string", "age:int"});
+    // Leer metadatos
+    std::vector<std::string> metadata = mm.readMetadata();
+    for (const auto& field : metadata) {
+        std::cout << "Campo: " << field << std::endl;
+    }
+    // Actualizar un campo
+    mm.updateMetadata("age:int", "age:float");
+    // Eliminar un campo
+    mm.removeField("name:string");
 }
-*/
+
 int main(int argc, const char * argv[]) {
     
     testFileManager();
     testStorageManager();
-    //testMetadataManager();
+    testMetadataManager();
     
     return 0;
 }
