@@ -16,7 +16,7 @@ public:
     StorageManager(const std::string& schema, const std::string& meta, const std::string& index);
 
     // Métodos para manejar registros
-    bool write(const std::string& data);
+    bool write(const std::string& table, const std::string& data);
     std::vector<std::string> read();
     bool update(const std::string& old_data, const std::string& new_data);
     bool remove(const std::string& data);

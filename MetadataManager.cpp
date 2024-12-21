@@ -4,21 +4,24 @@
 
 MetadataManager::MetadataManager(const std::string& schema)
     : schema_name(schema) {
-    std::string folderName = "database";
-    std::string folderPathStr = fs::current_path().string(); // Directorio actual
-    base_path = folderPathStr + "/" + folderName;
-    metadata_file = base_path + "/" + schema_name + "_metadata.meta";
+    base_path = fs::current_path().string() + "/database/" + schema_name;
+    metadata_file = base_path + "/metadata.meta"; // Cambiar a un formato único por base de datos
+}
+
+void MetadataManager::setMetadataFile(const std::string& schema, const std::string& tableName) {
+    schema_name = schema;
+    metadata_file = "database/" + schema_name + "/" + tableName + "_metadata.meta";
 }
 
 bool MetadataManager::writeMetadata(const std::vector<std::string>& fields) {
-    std::ofstream meta_file(metadata_file, std::ios::trunc); // Truncar para sobrescribir
+    std::ofstream meta_file(metadata_file, std::ios::trunc);
     if (!meta_file.is_open()) {
         std::cerr << "Error al abrir el archivo de metadatos para escribir." << std::endl;
         return false;
     }
 
     for (const auto& field : fields) {
-        meta_file << field << std::endl; // Escribir cada campo
+        meta_file << field << std::endl;
     }
 
     meta_file.close();
@@ -35,7 +38,7 @@ std::vector<std::string> MetadataManager::readMetadata() {
 
     std::string line;
     while (std::getline(meta_file, line)) {
-        fields.push_back(line); // Leer cada línea como un campo
+        fields.push_back(line);
     }
 
     meta_file.close();
@@ -85,30 +88,3 @@ bool MetadataManager::removeField(const std::string& field_to_remove) {
     meta_file.close();
     return removed;
 }
-
-///////////////////////////////////////////////////////////////////////////
-
-#include "MetadataManager.h"
-#include <iostream>
-
-int main() {
-    MetadataManager mm("schema1");
-
-    // Escribir metadatos
-    mm.writeMetadata({"id:int", "name:string", "age:int"});
-
-    // Leer metadatos
-    std::vector<std::string> metadata = mm.readMetadata();
-    for (const auto& field : metadata) {
-        std::cout << "Campo: " << field << std::endl;
-    }
-
-    // Actualizar un campo
-    mm.updateMetadata("age:int", "age:float");
-
-    // Eliminar un campo
-    mm.removeField("name:string");
-
-    return 0;
-}
-

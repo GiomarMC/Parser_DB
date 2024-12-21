@@ -6,26 +6,35 @@ namespace fs = std::filesystem;
 
 StorageManager::StorageManager(const std::string& schema, const std::string& meta, const std::string& index)
     : schema_name(schema), metadata(meta), index_file(index) {
-        std::string folderName = "database";
-        std::string folderPathStr = fs::current_path().string(); // Directorio actual
-        base_path = folderPathStr + "/" + folderName;
-    }
+    // Ruta completa al directorio de la base de datos
+    base_path = fs::current_path().string() + "/database/" + schema_name;
+}
 
-bool StorageManager::write(const std::string& data) {
-    std::ofstream data_file(base_path +"/"+ schema_name + "_data.dat", std::ios::app);  // Abrir en modo de agregar
-    if (!data_file.is_open()) {
-        std::cerr << "Error al abrir el archivo para escribir." << std::endl;
+bool StorageManager::write(const std::string& table, const std::string& data) {
+    std::string dataFilePath = base_path + "/" + table + ".dat";
+    std::string indexFilePath = base_path + "/" + table + ".idx";
+
+    std::ofstream data_file(dataFilePath, std::ios::app);
+    std::ofstream idx_file(indexFilePath, std::ios::app);
+
+    if (!data_file.is_open() || !idx_file.is_open()) {
+        std::cerr << "Error al abrir archivo de datos o índice para escribir." << std::endl;
         return false;
     }
 
-    data_file << data << std::endl;  // Escribir el registro
+    std::streampos pos = data_file.tellp();
+    data_file << data << std::endl;
+    idx_file << pos << std::endl;
+
     data_file.close();
+    idx_file.close();
     return true;
 }
 
 std::vector<std::string> StorageManager::read() {
     std::vector<std::string> records;
-    std::ifstream data_file(base_path +"/"+ schema_name + "_data.dat");
+    std::ifstream data_file(base_path + "/" + schema_name + ".dat");
+
     if (!data_file.is_open()) {
         std::cerr << "Error al abrir el archivo para leer." << std::endl;
         return records;
@@ -33,54 +42,64 @@ std::vector<std::string> StorageManager::read() {
 
     std::string line;
     while (std::getline(data_file, line)) {
-        records.push_back(line);  // Almacenar cada registro
+        records.push_back(line);
     }
     data_file.close();
     return records;
 }
 
 bool StorageManager::update(const std::string& old_data, const std::string& new_data) {
-    std::vector<std::string> records = read();  // Leer los registros actuales
-    bool updated = false;
+    try {
+        fs::path dataFilePath = fs::path(base_path) / (schema_name + "_data.dat");
+        std::vector<std::string> records = read();
 
-    std::ofstream data_file(base_path +"/"+ schema_name + "_data.dat", std::ios::trunc);  // Abrir en modo truncar para reemplazar contenido
-    if (!data_file.is_open()) {
-        std::cerr << "Error al abrir el archivo para actualizar." << std::endl;
+        bool updated = false;
+        std::ofstream dataFile(dataFilePath, std::ios::trunc);
+
+        if (!dataFile.is_open()) {
+            throw std::ios::failure("Error abriendo archivo para actualizar.");
+        }
+
+        for (auto& record : records) {
+            if (record == old_data) {
+                record = new_data;
+                updated = true;
+            }
+            dataFile << record << "\n";
+        }
+        return updated;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error actualizando registro: " << e.what() << std::endl;
         return false;
     }
-
-    for (auto& record : records) {
-        if (record == old_data) {
-            record = new_data;  // Actualizar el registro
-            updated = true;
-        }
-        data_file << record << std::endl;  // Escribir el registro de vuelta al archivo
-    }
-
-    data_file.close();
-    return updated;
 }
 
 bool StorageManager::remove(const std::string& data) {
-    std::vector<std::string> records = read();  // Leer los registros actuales
-    bool deleted = false;
+    try {
+        fs::path dataFilePath = fs::path(base_path) / (schema_name + "_data.dat");
+        fs::path idxFilePath = fs::path(base_path) / (schema_name + "_data.idx");
 
-    std::ofstream data_file(base_path +"/"+ schema_name + "_data.dat", std::ios::trunc);  // Abrir en modo truncar para reemplazar contenido
-    if (!data_file.is_open()) {
-        std::cerr << "Error al abrir el archivo para eliminar." << std::endl;
+        std::vector<std::string> records = read();
+        std::ofstream dataFile(dataFilePath, std::ios::trunc);
+        std::ofstream idxFile(idxFilePath, std::ios::trunc);
+
+        if (!dataFile.is_open() || !idxFile.is_open()) {
+            throw std::ios::failure("Error al abrir archivos para eliminar.");
+        }
+
+        for (size_t i = 0; i < records.size(); ++i) {
+            if (records[i] != data) {
+                dataFile << records[i] << "\n";
+                idxFile << i << "\n";
+            }
+        }
+        return true;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error eliminando registro: " << e.what() << std::endl;
         return false;
     }
-
-    for (auto& record : records) {
-        if (record != data) {
-            data_file << record << std::endl;  // Escribir el registro que no se elimina
-        } else {
-            deleted = true;  // Marcar que se eliminó el registro
-        }
-    }
-
-    data_file.close();
-    return deleted;
 }
 
 bool StorageManager::manageIndex(const std::string& index_data) {

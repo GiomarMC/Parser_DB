@@ -3,9 +3,8 @@
 
 FileManager::FileManager() {
     try {
-        // Obtén el directorio actual
         std::string folderName = "database";
-        std::string folderPathStr = fs::current_path().string(); // Directorio actual
+        std::string folderPathStr = fs::current_path().string();
         
         fs::path folderPath = folderPathStr + "/" + folderName;
         base_path = folderPathStr + "/" + folderName;
@@ -44,49 +43,43 @@ bool FileManager::create_schema(std::string schema_name){
 bool FileManager::create_file(const std::string& filename) {
     try {
         fs::path filePath = base_path + "/" + current_schema + "/" + filename;
-        
-        // Crear archivos relacionados
+
         std::ofstream dataFile(filePath.string() + ".dat");
-        std::ofstream metaFile(filePath.string() + ".meta");
+        std::ofstream metaFile(filePath.string() + "_metadata.meta");
         std::ofstream idxFile(filePath.string() + ".idx");
-        
+
         if (dataFile && metaFile && idxFile) {
-            std::cout << "Archivo creado exitosamente: " << filename << std::endl;
+            std::cout << "Archivos creados exitosamente para la tabla: " << filename << std::endl;
             dataFile.close();
             metaFile.close();
             idxFile.close();
             return true;
         } else {
-            std::cerr << "Error al crear el archivo: " << filename << std::endl;
+            std::cerr << "Error al crear archivos para la tabla: " << filename << std::endl;
             return false;
         }
     } catch (const std::exception& e) {
-        std::cerr << "Error creando archivo: " << e.what() << std::endl;
+        std::cerr << "Error creando archivos: " << e.what() << std::endl;
         return false;
     }
 }
 
 bool FileManager::write_record(const std::string& filename, const std::string& record) {
     try {
-        fs::path dataFilePath = base_path + "/" + current_schema + "/" + filename + ".dat";
-        fs::path idxFilePath = base_path + "/" + current_schema + "/" + filename + ".idx";
+        fs::path dataFilePath = fs::path(base_path) / current_schema / (filename + ".dat");
+        fs::path idxFilePath = fs::path(base_path) / current_schema / (filename + ".idx");
 
-        // Abrir archivo para escritura
         std::ofstream dataFile(dataFilePath, std::ios::app);
         std::ofstream idxFile(idxFilePath, std::ios::app);
 
         if (!dataFile || !idxFile) {
-            std::cerr << "No se pudo abrir el archivo para escritura: " << filename << std::endl;
-            return false;
+            throw std::ios::failure("No se pudo abrir el archivo para escritura.");
         }
 
-        // Escribir registro y guardar la posición
         std::streampos pos = dataFile.tellp();
         dataFile << record << "\n";
         idxFile << pos << "\n";
 
-        dataFile.close();
-        idxFile.close();
         return true;
     } catch (const std::exception& e) {
         std::cerr << "Error escribiendo registro: " << e.what() << std::endl;
@@ -96,7 +89,6 @@ bool FileManager::write_record(const std::string& filename, const std::string& r
 
 std::string FileManager::read_record(const std::string& schema_name, size_t record_id) {
     try {
-        // Ruta al archivo de índices
         fs::path idxFilePath = base_path + "/"  + current_schema + "/" + schema_name + ".idx";
         fs::path dataFilePath = base_path + "/"  + current_schema + "/" + schema_name + ".dat";
         
@@ -104,13 +96,11 @@ std::string FileManager::read_record(const std::string& schema_name, size_t reco
             throw std::runtime_error("Index or data file does not exist for schema: " + schema_name);
         }
 
-        // Abrir archivo de índices
         std::ifstream idxFile(idxFilePath, std::ios::binary);
         if (!idxFile.is_open()) {
             throw std::runtime_error("Failed to open index file: " + idxFilePath.string());
         }
 
-        // Leer las posiciones del archivo de índices
         std::vector<std::streamoff> positions;
         std::streamoff pos;
         int value;
@@ -119,21 +109,17 @@ std::string FileManager::read_record(const std::string& schema_name, size_t reco
             positions.push_back(pos);
         }
 
-        // Validar el record_id
         if (record_id >= positions.size()) {
             throw std::out_of_range("Record ID is out of range.");
         }
 
-        // Obtener la posición del registro
         std::streamoff record_position = positions[record_id];
 
-        // Abrir archivo de datos
         std::ifstream dataFile(dataFilePath, std::ios::binary);
         if (!dataFile.is_open()) {
             throw std::runtime_error("Failed to open data file: " + dataFilePath.string());
         }
 
-        // Mover el cursor a la posición del registro y leerlo
         dataFile.seekg(record_position);
         std::string record;
         std::getline(dataFile, record);
@@ -158,17 +144,3 @@ void FileManager::list_files(){
 }
 
 namespace fs = std::filesystem;
-/*
-int main(int argc, const char * argv[]) {
-    FileManager filemanager;
-    filemanager.create_schema("test_schema");
-    filemanager.write_record("test_file", "Registro 1");
-    filemanager.write_record("test_file", "Registro 2");    
-    std::cout << "Leyendo registros:\n";
-    std::cout << filemanager.read_record("test_file", 0) << std::endl;
-    std::cout << filemanager.read_record("test_file", 1) << std::endl;
-
-    //filemanager.list_files();
-    return 0;
-}
-*/

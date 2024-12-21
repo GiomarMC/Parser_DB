@@ -19,6 +19,9 @@ public:
     // Escribe los campos de metadatos en el archivo
     bool writeMetadata(const std::vector<std::string>& fields);
 
+    // Establece el archivo de metadatos
+    void setMetadataFile(const std::string& schema, const std::string& tableName);
+
     // Lee los campos de metadatos desde el archivo
     std::vector<std::string> readMetadata();
 
@@ -29,4 +32,4 @@ public:
     bool removeField(const std::string& field_to_remove);
 };
 
-#endif // METADATA_MANAGER_H
+#endif
