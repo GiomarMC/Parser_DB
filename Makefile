@@ -8,7 +8,7 @@ CXXFLAGS = -Wall -std=c++17
 EXEC = programa
 
 #Archivos de origen
-SRCS = main.cpp
+SRCS = main.cpp Scanner.cpp Parser.cpp StorageManager.cpp MetadataManager.cpp FileManager.cpp Executor.cpp
 
 #Archivos objeto
 OBJS = $(SRCS:.cpp=.o)

@@ -1,9 +1,16 @@
-#include "scanner.h"
-#include "parser.h"
+#include "Scanner.h"
+#include "Parser.h"
+#include "Executor.h"
+#include <iostream>
 
 int main()
 {
-    std::string sourceCode = "&CREATE DATABASE test#\n&SELECT * FROM table WHERE column = 10#\n";
+    std::string sourceCode = "&CREATE DATABASE test#\n"
+                             "&CREATE TABLE estudiantes (id int, nombre varchar)#\n"
+                             "&INSERT INTO estudiantes (id, nombre) VALUES (1, 'Juan')#\n"
+                             "&INSERT INTO estudiantes (id, nombre) VALUES (2, 'Pedro')#\n"
+                             "&SELECT * FROM estudiantes WHERE id <= 1 | resultado#\n";
+
     std::vector<std::string> errorList;
 
     Scanner scanner(sourceCode);
@@ -12,20 +19,10 @@ int main()
     if (!errorList.empty())
     {
         for (const auto& error : errorList)
-        {
             std::cerr << error << std::endl;
-        }
+        return 1;
     }
 
-    std::cout << "Analasis lexico" << std::endl;
-    for (const auto& token : tokens)
-    {
-        std::cout << "Tipo: " << tokenTypeToString(token.type) 
-                  << ", Lexema: " << token.lexeme 
-                  << ", Columna: " << token.column << std::endl;
-    }
-
-    std::cout << "Analisis sintactico" << std::endl;
     try
     {
         Parser parser(tokens);
@@ -33,12 +30,14 @@ int main()
         generateDotFile(astRoot, "ast.dot");
         generatePng("ast.dot", "ast.png");
         std::cout << "AST generado exitosamente en ast.png.\n";
+
+        Executor executor("test_schema");
+        executor.execute(astRoot);
     }
     catch (const std::exception& e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
     }
-    
 
     return 0;
 }
