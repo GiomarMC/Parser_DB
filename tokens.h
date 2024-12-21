@@ -50,7 +50,7 @@ struct Token
     Token(TokenType t, const std::string& l, int col): type(t), lexeme(l), column(col) {}
 };
 
-std::string tokenTypeToString(TokenType type)
+inline std::string tokenTypeToString(TokenType type)
 {
     switch(type)
     {
